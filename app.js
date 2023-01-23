@@ -3,8 +3,10 @@ const path = require('path');
 const express = require('express');
 const errorController = require('./controllers/error');
 const bodyParser = require('body-parser');
-const mongoConnect = require('./util/database').mongoConnect;
-const expressHbs = require('express-handlebars');
+const mongoose = require('mongoose');
+// const mongoConnect = require('./util/database').mongoConnect;
+// const expressHbs = require('express-handlebars');
+const user = require('./models/user')
 const app = express();
 
 app.set('view engine', 'ejs');
@@ -14,23 +16,37 @@ app.set('views', 'views');
 // app.set('view engine', 'pug');
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
+// const User = require('./models/user');
 
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use((req,res,next) => {
-    next();
-})
+// app.use((req,res,next) => {
+//     User.findById("63ce0f6ffbd11d5dc8680909")
+//         .then(user => {
+//             req.user = new User(user.name, user.email, user.cart, user._id);
+//             next();
+//         })
+//         .catch(err => console.log(err));
+// })
 
 app.use('/admin',adminRoutes);
 app.use(shopRoutes);
 
 app.use(errorController.get404);
 
-mongoConnect(() => {
-    // console.log(client);
+mongoose.connect('mongodb+srv://princeb:prince1234@cluster0.adddb8s.mongodb.net/shop?retryWrites=true&w=majority')
+.then(result => {
     app.listen(3000);
-});
+})
+.catch(err => {
+    console.log(err);
+})
+
+// mongoConnect(() => {
+//     // console.log(client);
+//     app.listen(3000);
+// });
 // app.listen(3000);
 // res.status(404).render('404', {pageTitle : 'Page Not Found'});
     // res.status(404).sendFile(path.join(__dirname,'views', '404.html'))
