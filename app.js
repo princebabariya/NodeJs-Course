@@ -16,19 +16,19 @@ app.set('views', 'views');
 // app.set('view engine', 'pug');
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
-// const User = require('./models/user');
+const User = require('./models/user');
 
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// app.use((req,res,next) => {
-//     User.findById("63ce0f6ffbd11d5dc8680909")
-//         .then(user => {
-//             req.user = new User(user.name, user.email, user.cart, user._id);
-//             next();
-//         })
-//         .catch(err => console.log(err));
-// })
+app.use((req,res,next) => {
+    User.findById("63cfb09a4f99513f59a3d6b5")
+        .then(user => {
+            req.user = user;
+            next();
+        })
+        .catch(err => console.log(err));
+})
 
 app.use('/admin',adminRoutes);
 app.use(shopRoutes);
@@ -37,6 +37,18 @@ app.use(errorController.get404);
 
 mongoose.connect('mongodb+srv://princeb:prince1234@cluster0.adddb8s.mongodb.net/shop?retryWrites=true&w=majority')
 .then(result => {
+    User.findOne().then(user => {
+        if(!user){
+            const user = new User({
+                name: 'Prince',
+                email: 'princebabariya06@gmail.com',
+                cart: {
+                    items: []
+                }
+            });
+            user.save();
+        }
+    })
     app.listen(3000);
 })
 .catch(err => {
