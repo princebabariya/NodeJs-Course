@@ -10,13 +10,13 @@ const orderSchema = new Schema({
                 required: true
             },
             quantity: {
-                type: Number,
+                type: Number, 
                 required: true
             }
     }
     ],
     user: {
-        name: {
+        email: {
             type: String,
             required: true
         },

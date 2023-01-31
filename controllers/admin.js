@@ -1,8 +1,13 @@
 // const mongodb = require('mongodb');
 const Product =require('../models/product');
 // const ObjectId = mongodb.ObjectId;
+
+
 exports.getAddProduct = (req,res,next) => {
     // console.log("I am next Middleware");
+    // if(!req.session.isLoggedIn){
+    //     return res.redirect('/login');
+    // }
     res.render('admin/edit-product',{
         pageTitle : 'Add Product', 
         path : '/admin/add-product',
@@ -20,7 +25,7 @@ exports.postAddProduct = (req,res,next) =>{
         price: price, 
         description: description, 
         imageUrl: imageUrl,
-        userId: req.user._id
+        userId: req.user
     });
     product
         .save()
@@ -93,9 +98,7 @@ exports.getProducts = (req,res,next) => {
             res.render('admin/products', {
                 prods: products, 
                 pageTitle : 'Admin Products', 
-                path: '/admin/products',
-                isAuthenticated: req.isLoggedIn
-        
+                path: '/admin/products'
             });
             
         });
