@@ -15,33 +15,36 @@ exports.getAddProduct = (req,res,next) => {
     })
 };
 
-exports.postAddProduct = (req,res,next) =>{
+exports.postAddProduct = (req, res, next) => {
     const title = req.body.title;
+    const imageUrl = req.body.imageUrl;
     const price = req.body.price;
     const description = req.body.description;
-    const imageUrl = req.body.imageUrl;
-    const product =  new Product({
-        title: title, 
-        price: price, 
-        description: description, 
-        imageUrl: imageUrl,
-        userId: req.user
+
+    console.log(req.session.user._id);
+
+    const product = new Product({
+      title: title,
+      price: price,
+      description: description,
+      imageUrl: imageUrl,
+      userId: req.session.user._id
     });
     product
-        .save()
-        .then(result => {
-            console.log('Created Product');
-            res.redirect('/admin/products');
-        })
-        .catch(err => {
-            console.log(err); 
-        })
-
+      .save()
+      .then(result => {
+        // console.log(result);
+        console.log('Created Product');
+        res.redirect('/admin/products');
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
     // product.save();
     // console.log(req.body);
     // products.push({title: req.body.title})
     // res.redirect('/');  
-};
 
 exports.getEditProduct = (req,res,next) => {
     // console.log("I am next Middleware");
@@ -68,30 +71,34 @@ exports.getEditProduct = (req,res,next) => {
 
 };
 
-exports.postEditProduct = (req,res,next) => {
-    const proId = req.body.productId;
+exports.postEditProduct = (req, res, next) => {
+    const prodId = req.body.productId;
     const updatedTitle = req.body.title;
     const updatedPrice = req.body.price;
     const updatedImageUrl = req.body.imageUrl;
     const updatedDesc = req.body.description;
-
-    Product.findById(proId)
-    .then(product => {
+  
+    Product.findById(prodId)
+      .then(product => {
+        if(product.userId.toString() !== req.user._id.toString()){
+            return res.redirect('/');
+        }
         product.title = updatedTitle;
         product.price = updatedPrice;
         product.description = updatedDesc;
-        product.imageUrl = updatedImageUrl;
-        return product.save();
-    })
+           product.imageUrl = updatedImageUrl;
+        return product.save()      
         .then(result => {
-            console.log('Updated Product');
+            console.log('UPDATED PRODUCT!');
             res.redirect('/admin/products');
-        })
-        .catch(err => console.log(err));
-};
+          })
+      })
+
+      .catch(err => console.log(err));
+  };
 
 exports.getProducts = (req,res,next) => {
-    Product.find()
+    Product.find({userId: req.user._id})
         // .select('title price -_id')
         // .populate('userId', 'name')
         .then(products => {
@@ -106,7 +113,8 @@ exports.getProducts = (req,res,next) => {
 
 exports.postDeleteProduct = (req, res, next) => {
     const proId = req.body.productId;
-    Product.findByIdAndRemove(proId)
+    Product.deleteOne({_id: proId, userId: req.user._id})
+    // Product.findByIdAndRemove(proId)
         .then(() => {
             console.log('Deleted Product');
             res.redirect('./admin/products');

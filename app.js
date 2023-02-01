@@ -54,7 +54,7 @@ app.use((req,res,next) => {
     }
     User.findById(req.session.user._id)
     .then(user => {
-       req.user = 
+       req.user = user;
         next();
     })
     .catch(err => console.log(err));
@@ -72,7 +72,7 @@ app.use(authRoutes);
 
 app.use(errorController.get404);
  
-mongoose.connect(MONGODB_URI)
+mongoose.connect(MONGODB_URI) 
 .then(result => {
    
     
