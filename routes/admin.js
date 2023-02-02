@@ -1,4 +1,5 @@
 const express = require('express');
+const { body } = require('express-validator/check');
 const path = require('path');
 const adminController = require('../controllers/admin');
 const isAuth = require('../middleware/is-auth');
@@ -13,10 +14,38 @@ router.get('/products', isAuth, adminController.getProducts);
 //     // res.sendFile(path.join(rootDir,'views','add-product.html'))
 //     // res.send("<form action = '/admin/add-product' method = 'POST'><input type = 'text' name = 'title'> <button type = 'submit'>Add Product</button></input></form>")
  
-router.post('/add-product', isAuth, adminController.postAddProduct);
+router.post(
+    '/add-product', 
+    [
+        body('title')
+        .isString()
+        .isLength({ min: 3})
+        .trim(),
+        body('price').isFloat(),
+        body('description')
+        .isLength({ min: 5, max: 200 })
+        .trim()
+    ],   
+    isAuth, 
+    adminController.postAddProduct
+    );
 router.get('/edit-product/:productId', isAuth, adminController.getEditProduct);
 
-router.post('/edit-product', isAuth, adminController.postEditProduct);
+router.post(
+    '/edit-product', 
+    [
+        body('title')
+        .isString()
+        .isLength({ min: 3})
+        .trim(),
+        body('price').isFloat(),
+        body('description')
+        .isLength({ min: 5, max: 200 })
+        .trim()
+    ],   
+    isAuth, 
+    adminController.postEditProduct
+    );
 
 router.post('/delete-product', isAuth, adminController.postDeleteProduct); 
 
