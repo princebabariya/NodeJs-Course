@@ -1,7 +1,7 @@
 // const products = [];
 const fs= require('fs');
 const path = require('path');
-const stripe = require('stripe')('sk_test_51MXjcISC0o2ktDSPAN1oiStwuPQHMrFcECLBVwBKSASYIHP9a28jEmQmCf1qFv87b46qMQhOTD4UlYmDwjEqeZMn00R5iUw4hG');
+const stripe = require('stripe')(process.env.STRIPE_KEY);
 const Product = require('../models/product');
 const Order = require('../models/order');
 const PDFDocument = require('pdfkit');
@@ -202,7 +202,7 @@ exports.getCheckout = (req, res, next) => {
         success_url: req.protocol + '://' + req.get('host') + '/checkout/success', // => http://localhost:3000
         cancel_url: req.protocol + '://' + req.get('host') + '/checkout/cancel'
       });
-    })
+    }) 
     .then(session => {
       res.render('shop/checkout', {
         path: '/checkout',
